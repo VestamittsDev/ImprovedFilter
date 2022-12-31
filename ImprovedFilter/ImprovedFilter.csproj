@@ -56,8 +56,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImprovedFilterPatch.cs" />
+    <Compile Include="Patches\ItemInstancePatches.cs" />
     <Compile Include="ModLoader.cs" />
+    <Compile Include="Patches\LootEntryPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

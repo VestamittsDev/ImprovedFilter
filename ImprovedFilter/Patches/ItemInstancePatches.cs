@@ -4,12 +4,23 @@ using UnityEngine;
 namespace ImprovedFilter
 {
 	[HarmonyPatch(typeof(ItemInstance))]
-	public class ImprovedFilterPatch
+	public class ItemInstancePatches
 	{
 		[HarmonyPrefix]
 		[HarmonyPatch("DropItem")]
 		public static bool DropItemPrefix(Vector2 position, Vector2 floorPosition, Vector2 force, ItemInstance __instance)
 		{
+			// Do not apply to items being added directly to inventory
+			string itemDesc = __instance.Description;
+			bool addToInventory = itemDesc.EndsWith("#");
+			if (addToInventory)
+			{
+				// Remove addToInventory mark
+				Traverse.Create(__instance.Item).Field("description").SetValue(itemDesc.Substring(0, itemDesc.Length - 1));
+
+				return true;
+			}
+
 			// Do not apply to items dropped from inventory
 			bool inInventory = __instance.State.HasFlag(ItemInstanceState.InInventory);
 			if (inInventory)
@@ -28,9 +39,10 @@ namespace ImprovedFilter
 			if (!passedFilter)
 			{
 				__instance.DestroyItem();
+				return false;
 			}
 
-			return false;
+			return true;
 		}
 
 		#region Helpers
